@@ -1,6 +1,8 @@
-import React, { useEffect, useReducer, useState, useMemo } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import CharacterList from "./components/CharacterList";
 import "./App.scss";
+import SearchNavbar from "./components/SearchNavbar";
+import { toast, ToastContainer } from "react-toastify";
 
 export interface StarWarsCharacter {
   name: string;
@@ -22,17 +24,16 @@ export interface StarWarsCharacter {
 }
 
 interface State {
-  loading: boolean; // indique si les données sont en cours de chargement
-  error: string | null; // message d'erreur s’il y a un problème
-  characters: StarWarsCharacter[]; // liste des personnages récupérés
+  loading: boolean;
+  error: string | null;
+  characters: StarWarsCharacter[];
 }
 
 type Action =
-  | { type: "FETCH_INIT" } // début du chargement
-  | { type: "FETCH_SUCCESS"; payload: StarWarsCharacter[] } // succès de la requête
-  | { type: "FETCH_FAILURE"; payload: string }; // échec de la requête
+  | { type: "FETCH_INIT" }
+  | { type: "FETCH_SUCCESS"; payload: StarWarsCharacter[] }
+  | { type: "FETCH_FAILURE"; payload: string };
 
-// 🔹 État initial
 const initialState: State = {
   loading: false,
   error: null,
@@ -52,77 +53,67 @@ function fetchReducer(state: State, action: Action): State {
   }
 }
 
-// 🔹 Composant principal de l’application
 const App: React.FC = () => {
-  // Gestion de l’état via useReducer
   const [state, dispatch] = useReducer(fetchReducer, initialState);
-
-  // Page actuelle pour la pagination
   const [page, setPage] = useState(1);
-
-  // Texte de recherche
   const [search, setSearch] = useState("");
 
-  // 🔹 Récupération des personnages à chaque changement de page
+  const { characters, loading, error } = state;
   useEffect(() => {
     const fetchCharacters = async () => {
-      dispatch({ type: "FETCH_INIT" });
       try {
-        // Appel à l’API SWAPI (Star Wars API)
-        const response = await fetch(`https://swapi.dev/api/people/?page=${page}`);
-        if (!response.ok) throw new Error("La requête a échoué");
-        const data = await response.json();
-        // Mise à jour des personnages
-        dispatch({ type: "FETCH_SUCCESS", payload: data.results });
+        if (!search.trim()) {
+          // No search: fetch paginated characters
+          dispatch({ type: "FETCH_INIT" });
+          const response = await fetch(`https://swapi.dev/api/people/?page=${page}`);
+          if (!response.ok) throw new Error("La requête a échoué");
+          const data = await response.json();
+          dispatch({ type: "FETCH_SUCCESS", payload: data.results });
+          toast.success(`Success: donnes charge la page ${page}`);
+        } else {
+          // Search query: ignore pagination
+          setPage(1);
+          const response = await fetch(`https://swapi.dev/api/people/?search=${search}`);
+          if (!response.ok) throw new Error("La requête a échoué");
+          const data = await response.json();
+          dispatch({ type: "FETCH_SUCCESS", payload: data.results });
+        }
       } catch (err: any) {
-        // Gestion d’erreur
+        toast.error("Données non disponibles");
+        console.error("Fetch failed:", err.message);
         dispatch({ type: "FETCH_FAILURE", payload: err.message });
       }
     };
+
     fetchCharacters();
-  }, [page]); // Dépendance : se déclenche à chaque changement de page
-
-  // Déstructuration pour plus de lisibilité
-  const { characters, loading, error } = state;
-
-  // 🔹 Filtrage des personnages selon le champ de recherche
-  // useMemo évite de recalculer inutilement le filtrage
-  const filteredCharacters = useMemo(() => {
-    if (!search.trim()) return characters;
-    return characters.filter((c) =>
-      c.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, characters]);
+  }, [search, page]);
 
   return (
     <div className="App">
       <h1>Star Wars Characters</h1>
 
-      {/* Champ de recherche */}
-      <div className="search">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="🔍 Rechercher un personnage..."
-        />
-      </div>
-
-      {/* Navigation entre les pages */}
       <div className="navigation">
-        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+        <button
+          className="nav-button"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+        >
           Précédent
         </button>
-        <span> Page {page} </span>
-        <button onClick={() => setPage((p) => p + 1)}>Suivant</button>
+
+        <SearchNavbar onSearchSubmit={setSearch} />
+
+        <button className="nav-button" onClick={() => setPage((p) => p + 1)}           disabled={characters.length <10}
+>
+          Suivant
+        </button>
       </div>
 
-      {/* Affichage de l’état actuel */}
-      {loading && <p>Chargement...</p>}
+      {loading && <p className="loading ">Chargement...</p>}
       {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
 
-      {/* Liste des personnages une fois les données chargées */}
-      {!loading && !error && <CharacterList characters={filteredCharacters} />}
+      {!loading && !error && <CharacterList characters={characters} />}
+      <ToastContainer />
     </div>
   );
 };

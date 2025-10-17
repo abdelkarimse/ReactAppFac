@@ -28,7 +28,6 @@
 .search {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
   gap: 10px;
 
   input {
@@ -100,5 +99,34 @@
 
   &:hover {
     transform: translateY(-5px);
+  }
+}
+.loading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:rgb(0, 211, 211);       // Star Wars-style yellow
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+  letter-spacing: 2px;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    margin-left: 10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background:rgb(0, 211, 211);
+    animation: blink 1s infinite;
+  }
+}
+
+@keyframes blink {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
   }
 }
