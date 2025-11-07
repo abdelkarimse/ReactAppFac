@@ -1,125 +1,195 @@
+/* Root container */
+/* Reset and base structure */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
 #root {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
+
+/* App container */
 .App {
   max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
-  color: #fff;
+  color: inherit; /* Adapts to current theme */
+}
 
-  h1 {
-    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-    color: rgb(186, 107, 3);
-    font-weight: 800;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-.navigation{
-  padding:auto;
+/* Page container for theme */
+.page-container {
+  min-height: 100vh;
+  padding: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================
+   THEME STYLES
+========================================= */
+.theme-light {
+  background-color: #D3DAD9;
+  color: #37353E;
+}
+
+.theme-dark {
+  background-color: #37353E;
+  color: #f0f0f0;
+}
+
+/* Headings */
+.App h1 {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  color: rgb(186, 107, 3);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+.navigation {
   width: 100%;
   display: flex;
   justify-content: space-between;
-
+  align-items: center;
 }
 
+/* =========================================
+   SEARCH BAR
+========================================= */
 .search {
   display: flex;
   justify-content: center;
   gap: 10px;
-
-  input {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #00d3d3;
-    border-radius: 8px;
-    outline: none;
-    transition: all 0.2s;
-
-    &:focus {
-      border-color: #007777;
-      box-shadow: 0 0 5px rgba(0, 119, 119, 0.5);
-    }
-  }
-
-
-}
-  .character-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
-    padding: 20px;
-  }
-  button {
-    font-size: medium;
-    padding: 12px 24px;
-    border-radius: 12px;
-    background-color: rgb(0, 211, 211);
-    cursor: pointer;
-  }
-
-  button:hover {
-    color: rgb(255, 255, 255);
-    background-color: rgb(39, 75, 75);
-  }
 }
 
-/* Style pour les cartes individuelles */
+.search input {
+  flex: 1;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #00d3d3;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search input:focus {
+  border-color: #007777;
+  box-shadow: 0 0 5px rgba(0, 119, 119, 0.5);
+}
+
+/* =========================================
+   CHARACTER LIST
+========================================= */
+.character-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 20px;
+}
+
+/* =========================================
+   CHARACTER CARD
+========================================= */
 .character-card {
   border-radius: 10px;
   overflow: hidden;
   text-align: center;
   padding: 10px 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s;
-
-  img {
-    width: 100%;
-    height: auto;
-    border-bottom: 1px solid #555;
-  }
-
-  h2 {
-    margin: 10px 0 5px;
-    font-size: 1.2rem;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #030303;
-  }
-    h2 {
-    margin: 0;
-    color: #030303;
-  }
-
-  &:hover {
-    transform: translateY(-5px);
-  }
+  transition: transform 0.2s ease;
+  background-color: inherit;
+  color: inherit;
 }
+
+.character-card img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #555;
+}
+
+.character-card h2 {
+  margin: 10px 0 5px;
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+.character-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.character-card:hover {
+  transform: translateY(-5px);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+button {
+  font-size: medium;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  background-color: rgb(0, 211, 211);
+  cursor: pointer;
+  transition: all 0.3s ease;
+    margin-bottom: 10px;
+
+}
+
+button:hover {
+  color: #fff;
+  background-color: rgb(39, 75, 75);
+}
+
+/* Themed button overrides */
+.themed-button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+/* Dark/Light themed button */
+.theme-light .themed-button {
+  background-color: #37353E;
+  color: #f0f0f0;
+}
+
+.theme-dark .themed-button {
+  background-color: #f0f0f0;
+  color: #37353E;
+}
+
+/* =========================================
+   LOADING ANIMATION
+========================================= */
 .loading {
   font-size: 1.5rem;
   font-weight: bold;
-  color:rgb(0, 211, 211);       // Star Wars-style yellow
+  color: rgb(0, 211, 211);
   text-align: center;
   margin: 2rem 0;
   position: relative;
   letter-spacing: 2px;
+}
 
-  &::after {
-    content: '';
-    display: inline-block;
-    margin-left: 10px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background:rgb(0, 211, 211);
-    animation: blink 1s infinite;
-  }
+.loading::after {
+  content: "";
+  display: inline-block;
+  margin-left: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(0, 211, 211);
+  animation: blink 1s infinite;
 }
 
 @keyframes blink {

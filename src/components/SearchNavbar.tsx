@@ -14,8 +14,8 @@ const SearchNavbar: React.FC<SearchNavbarProps> = ({ onSearchSubmit }) => {
           type="text"
           value={search}
           onChange={(e) => {
-            setSearch(e.target.value); // update local state
-            onSearchSubmit(e.target.value); // update parent
+            setSearch(e.target.value);
+            onSearchSubmit(e.target.value); 
           }}
           placeholder="Search..."
         />

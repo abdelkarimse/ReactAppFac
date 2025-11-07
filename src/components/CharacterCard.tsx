@@ -1,31 +1,45 @@
 // CharacterCard.tsx
 import React from "react";
+import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import type { StarWarsCharacter } from "../App";
+import { useFavorite } from "../contexts/FavoriteContext";
 
 interface CharacterCardProps {
   character: StarWarsCharacter;
 }
 
-// Composant fonctionnel qui affiche les informations d'un personnage
 const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
-  // Image de profil générée automatiquement à partir du nom du personnage
-  const placeholderImage = `https://ui-avatars.com/api/?name=${character.name}`;
+  const { state, dispatch } = useFavorite();
+
+  const isFavorite = state.favorites.some((c) => c.name === character.name);
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      dispatch({ type: "REMOVE_FAVORITE", payload: character.name });
+    } else {
+      dispatch({ type: "ADD_FAVORITE", payload: character });
+    }
+  };
+
+  const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(character.name)}`;
 
   return (
     <div className="character-card">
-      {/* Image du personnage (ou avatar généré) */}
-      <img src={placeholderImage} alt={character.name} />
+      <button className="favorite-toggle" onClick={toggleFavorite}>
+        {isFavorite ? <MdFavorite color="red" /> : <MdFavoriteBorder />}
+      </button>
 
-      {/* Nom du personnage */}
-      <h2>{character.name}</h2>
+      <img src={avatar} alt={character.name} className="character-image" />
 
-      {/* Détails du personnage */}
-      <p>Taille : {character.height} cm</p>
-      <p>Masse : {character.mass} kg</p>
-      <p>Genre : {character.gender}</p>
+      <h2 className="character-name">{character.name}</h2>
+
+      <div className="character-info">
+        <p>Height: {character.height} cm</p>
+        <p>Mass: {character.mass} kg</p>
+        <p>Gender: {character.gender}</p>
+      </div>
     </div>
   );
 };
 
-// Exportation du composant pour utilisation dans d'autres fichiers
 export default CharacterCard;

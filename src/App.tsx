@@ -1,8 +1,10 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, {  useEffect, useReducer, useState } from "react";
 import CharacterList from "./components/CharacterList";
 import "./App.scss";
 import SearchNavbar from "./components/SearchNavbar";
 import { toast, ToastContainer } from "react-toastify";
+import { ThemeContext } from "./contexts/ThemeContext";
+import ThemedButton from "./buttons/ThemedButton";
 
 export interface StarWarsCharacter {
   name: string;
@@ -57,6 +59,11 @@ const App: React.FC = () => {
   const [state, dispatch] = useReducer(fetchReducer, initialState);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [theme, setTheme] = useState("light");
+  const toggleTheme = () => {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  };
+  const providerValue = { theme, toggleTheme };
 
   const { characters, loading, error } = state;
   useEffect(() => {
@@ -65,7 +72,9 @@ const App: React.FC = () => {
         if (!search.trim()) {
           // No search: fetch paginated characters
           dispatch({ type: "FETCH_INIT" });
-          const response = await fetch(`https://swapi.dev/api/people/?page=${page}`);
+          const response = await fetch(
+            `https://swapi.dev/api/people/?page=${page}`
+          );
           if (!response.ok) throw new Error("La requête a échoué");
           const data = await response.json();
           dispatch({ type: "FETCH_SUCCESS", payload: data.results });
@@ -73,7 +82,9 @@ const App: React.FC = () => {
         } else {
           // Search query: ignore pagination
           setPage(1);
-          const response = await fetch(`https://swapi.dev/api/people/?search=${search}`);
+          const response = await fetch(
+            `https://swapi.dev/api/people/?search=${search}`
+          );
           if (!response.ok) throw new Error("La requête a échoué");
           const data = await response.json();
           dispatch({ type: "FETCH_SUCCESS", payload: data.results });
@@ -89,32 +100,39 @@ const App: React.FC = () => {
   }, [search, page]);
 
   return (
-    <div className="App">
-      <h1>Star Wars Characters</h1>
+    <ThemeContext.Provider value={providerValue}>
+      <div className={`page-container theme-${theme}`}>
+        <div className="App">
+          <h1>Star Wars Characters</h1>
 
-      <div className="navigation">
-        <button
-          className="nav-button"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Précédent
-        </button>
+          <ThemedButton />
+          <div className="navigation">
+            <button
+              className="nav-button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Précédent
+            </button>
 
-        <SearchNavbar onSearchSubmit={setSearch} />
+            <SearchNavbar onSearchSubmit={setSearch} />
 
-        <button className="nav-button" onClick={() => setPage((p) => p + 1)}           disabled={characters.length <10}
->
-          Suivant
-        </button>
+            <button
+              className="nav-button"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={characters.length < 10}
+            >
+              Suivant
+            </button>
+          </div>
+          {loading && <p className="loading ">Chargement...</p>}
+          {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
+
+          {!loading && !error && <CharacterList characters={characters} />}
+          <ToastContainer />
+        </div>
       </div>
-
-      {loading && <p className="loading ">Chargement...</p>}
-      {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
-
-      {!loading && !error && <CharacterList characters={characters} />}
-      <ToastContainer />
-    </div>
+    </ThemeContext.Provider>
   );
 };
 
