@@ -1,10 +1,10 @@
-import React, {  useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import CharacterList from "./components/CharacterList";
 import "./App.scss";
 import SearchNavbar from "./components/SearchNavbar";
 import { toast, ToastContainer } from "react-toastify";
-import { ThemeContext } from "./contexts/ThemeContext";
 import ThemedButton from "./buttons/ThemedButton";
+import { useSelector } from "react-redux";
 
 export interface StarWarsCharacter {
   name: string;
@@ -53,18 +53,14 @@ function fetchReducer(state: State, action: Action): State {
     default:
       throw new Error("Action non reconnue");
   }
-}
+} 
 
 const App: React.FC = () => {
   const [state, dispatch] = useReducer(fetchReducer, initialState);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState("light");
-  const toggleTheme = () => {
-    setTheme((current) => (current === "light" ? "dark" : "light"));
-  };
-  const providerValue = { theme, toggleTheme };
-
+  const theme = useSelector((state: any) => state.theme.theme);
+  
   const { characters, loading, error } = state;
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -100,39 +96,37 @@ const App: React.FC = () => {
   }, [search, page]);
 
   return (
-    <ThemeContext.Provider value={providerValue}>
-      <div className={`page-container theme-${theme}`}>
-        <div className="App">
-          <h1>Star Wars Characters</h1>
+    <div className={`page-container theme-${theme}`}>
+      <div className="App">
+        <h1>Star Wars Characters</h1>
 
-          <ThemedButton />
-          <div className="navigation">
-            <button
-              className="nav-button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >
-              Précédent
-            </button>
+        <ThemedButton />
+        <div className="navigation">
+          <button
+            className="nav-button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Précédent
+          </button>
 
-            <SearchNavbar onSearchSubmit={setSearch} />
+          <SearchNavbar onSearchSubmit={setSearch} />
 
-            <button
-              className="nav-button"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={characters.length < 10}
-            >
-              Suivant
-            </button>
-          </div>
-          {loading && <p className="loading ">Chargement...</p>}
-          {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
-
-          {!loading && !error && <CharacterList characters={characters} />}
-          <ToastContainer />
+          <button
+            className="nav-button"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={characters.length < 10}
+          >
+            Suivant
+          </button>
         </div>
+        {loading && <p className="loading ">Chargement...</p>}
+        {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
+
+        {!loading && !error && <CharacterList characters={characters} />}
+        <ToastContainer />
       </div>
-    </ThemeContext.Provider>
+    </div>
   );
 };
 

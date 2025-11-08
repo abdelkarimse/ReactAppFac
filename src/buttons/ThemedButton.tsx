@@ -1,11 +1,19 @@
-import { useContext } from "react";
-import { ThemeContext } from "../contexts/ThemeContext";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../contexts/ThemeReducer";
+
 function ThemedButton() {
-  // Le bouton recupere la valeur du theme ET la fonction pour le changer
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
+
+  // Get the current theme value from Redux
+  const theme = useSelector((state: any) => state.theme.theme);
+
+  // Dispatch the toggle action when clicked
+  const handleToggle = () => {
+    dispatch(toggleTheme());
+  };
 
   return (
-    <button onClick={toggleTheme} className=" themed - button ">
+    <button onClick={handleToggle} className="themed-button">
       Passer en thème {theme === "light" ? "Dark" : "Light"}
     </button>
   );
