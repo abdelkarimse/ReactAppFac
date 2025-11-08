@@ -2,17 +2,17 @@
 import React from "react";
 import CharacterCard from "./CharacterCard";
 import type { StarWarsCharacter } from "../App";
-import { useFavorite, FavoriteProvider } from "../contexts/FavoriteContext";
 import { MdFavorite } from "react-icons/md";
-
+import { useStoreFavorites } from "../contexts/favoriteReducer";
 interface CharacterListProps {
   characters: StarWarsCharacter[];
 }
 
 // --- Favorite Bar ---
 const FavoriteBar: React.FC = () => {
-  const { state } = useFavorite();
-  const count = state.favorites.length;
+  const {favorites} = useStoreFavorites();
+  console.log(favorites);
+  const count = favorites.length;
 
   return (
     <div className="favorite-bar">
@@ -25,14 +25,14 @@ const FavoriteBar: React.FC = () => {
 // --- Character List ---
 const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
   return (
-    <FavoriteProvider>
+      <>
       <FavoriteBar />
       <div className="character-list">
         {characters.map((character) => (
           <CharacterCard key={character.name} character={character} />
         ))}
       </div>
-    </FavoriteProvider>
+      </>
   );
 };
 

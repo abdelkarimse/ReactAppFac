@@ -2,22 +2,25 @@
 import React from "react";
 import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import type { StarWarsCharacter } from "../App";
-import { useFavorite } from "../contexts/FavoriteContext";
+import { useStoreFavorites } from "../contexts/favoriteReducer";
 
 interface CharacterCardProps {
   character: StarWarsCharacter;
 }
 
 const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
-  const { state, dispatch } = useFavorite();
+  const {addFavorite} = useStoreFavorites();
+  const {removeFavorite} = useStoreFavorites();
+  const {favorites} = useStoreFavorites();
 
-  const isFavorite = state.favorites.some((c) => c.name === character.name);
+  const isFavorite = favorites.some((c :any ) => c.name === character.name);
 
   const toggleFavorite = () => {
-    if (isFavorite) {
-      dispatch({ type: "REMOVE_FAVORITE", payload: character.name });
+
+    if (!isFavorite) {
+        addFavorite(character);
     } else {
-      dispatch({ type: "ADD_FAVORITE", payload: character });
+        removeFavorite(character.name);
     }
   };
 

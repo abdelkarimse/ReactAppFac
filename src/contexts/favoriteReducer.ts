@@ -1,26 +1,29 @@
 import type { StarWarsCharacter } from "../App";
+import {create} from "zustand"
+import { persist } from "zustand/middleware";
+
 
 export interface FavoriteState {
   favorites: StarWarsCharacter[];
 }
 
-export type FavoriteAction =
-  | { type: "ADD_FAVORITE"; payload: StarWarsCharacter }
-  | { type: "REMOVE_FAVORITE"; payload: string };
-
 export const initialState: FavoriteState = {
   favorites: [],
 };
 
-export function favoriteReducer(state: FavoriteState, action: FavoriteAction): FavoriteState {
-  switch (action.type) {
-    case "ADD_FAVORITE":
-      if (state.favorites.some((c) => c.name === action.payload.name)) return state;
-      return { ...state, favorites: [...state.favorites, action.payload] };
-    case "REMOVE_FAVORITE":
-      return { ...state, favorites: state.favorites.filter((c) => c.name !== action.payload) };
-    default:
-      return state;
-  
-    }
-}
+ export const useStoreFavorites = create( persist (
+  (set) => ({
+  favorites: [],
+  addFavorite: (character: StarWarsCharacter) => {
+    set((state ) => ({ favorites: [...state.favorites, character] }));
+  },
+  removeFavorite: (character: string) => {
+    set((state) => ({ favorites: state.favorites.filter((c:any) => c.name !== character) }));
+  },
+
+  }),
+  {
+    name: "favorites",
+  }
+ )
+);

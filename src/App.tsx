@@ -3,7 +3,7 @@ import CharacterList from "./components/CharacterList";
 import "./App.scss";
 import SearchNavbar from "./components/SearchNavbar";
 import { toast, ToastContainer } from "react-toastify";
-import { ThemeContext } from "./contexts/ThemeContext";
+import { useStoretheme } from "./contexts/ThemeContext";
 import ThemedButton from "./buttons/ThemedButton";
 
 export interface StarWarsCharacter {
@@ -59,13 +59,8 @@ const App: React.FC = () => {
   const [state, dispatch] = useReducer(fetchReducer, initialState);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState("light");
-  const toggleTheme = () => {
-    setTheme((current) => (current === "light" ? "dark" : "light"));
-  };
-  const providerValue = { theme, toggleTheme };
-
   const { characters, loading, error } = state;
+  const {theme} = useStoretheme();
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
@@ -100,7 +95,6 @@ const App: React.FC = () => {
   }, [search, page]);
 
   return (
-    <ThemeContext.Provider value={providerValue}>
       <div className={`page-container theme-${theme}`}>
         <div className="App">
           <h1>Star Wars Characters</h1>
@@ -132,7 +126,6 @@ const App: React.FC = () => {
           <ToastContainer />
         </div>
       </div>
-    </ThemeContext.Provider>
   );
 };
 

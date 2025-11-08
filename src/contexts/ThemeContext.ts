@@ -1,10 +1,12 @@
-import { createContext } from "react";
+import { create } from "zustand";
 interface ThemeContextType {
   theme: string;
   toggleTheme: () => void;
 }  
 
-export const ThemeContext = createContext<ThemeContextType>({
-  theme: "light", // or your default theme
-  toggleTheme: () => {}, // placeholder function
-});
+ export const useStoretheme = create((set,get) => ({
+  theme: "light",
+  toggleTheme: () => {
+    set((state : ThemeContextType) => ({ theme: state.theme === "light" ? "dark" : "light" }));
+  },
+  }));
