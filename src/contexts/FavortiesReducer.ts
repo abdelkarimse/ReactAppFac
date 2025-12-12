@@ -1,7 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { StarWarsCharacter } from "../App";
 
-
 interface FavoritesState {
   favorites: StarWarsCharacter[];
 }
